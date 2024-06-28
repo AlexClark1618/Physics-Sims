@@ -1,0 +1,49 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+#Constants
+k=8.99e9
+Eext=1.0 #Strength of External Field
+q=1 #Strength of moving source charge
+
+#Creates Grid
+x = np.linspace(-5, 5, 20)
+y = np.linspace(-5, 5, 20)
+X, Y = np.meshgrid(x, y)
+
+def external_field():
+    Ex=Eext*np.ones_like(X)
+    Ey=Eext*np.zeros_like(Y)
+    return Ex, Ey
+
+def point_charge_field(x0:int,y0:int):
+    distance=((X - x0)**2 + (Y - y0)**2)
+    Ex=k*q*(X - x0)/distance**1.5
+    Ey=k*q*(Y - y0)/distance**1.5
+    return Ex, Ey
+
+def net_field(x0,y0):
+    Ex_external, Ey_external = external_field()
+    Ex_point, Ey_point = point_charge_field(x0, y0)
+    Ex_net=Ex_point+Ex_external
+    Ey_net=Ey_point+Ey_external
+    return Ex_net, Ey_net
+
+fig, ax = plt.subplots()
+ax.set_xlim(-5, 5)
+ax.set_ylim(-5, 5)
+quiver = ax.quiver(X, Y, np.zeros_like(X), np.zeros_like(Y))
+
+def update(frame):
+    x0 = -5 + (frame%100)/10 #Moving charge x position
+    y0 = 0 # Moving charge y position
+    Ex_net, Ey_net = net_field(x0, y0)
+    quiver.set_UVC(Ex_net, Ey_net)
+    ax.set_title(f"Frame {frame}")
+    return quiver,
+
+ani = FuncAnimation(fig, update, frames=100, interval=200)
+ani.save('MovingCharge.gif',writer='pillow',fps=30)
+
+plt.show()
