@@ -2,12 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-#Constants
 k=8.99e9
 Eext=1.0 #Strength of External Field
 q=1 #Strength of moving source charge
 
-#Creates Grid
 x = np.linspace(-5, 5, 20)
 y = np.linspace(-5, 5, 20)
 X, Y = np.meshgrid(x, y)
