@@ -1,0 +1,76 @@
+"3D Brownian Motion"
+
+%matplotlib widget
+
+from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
+from mpl_toolkits import mplot3d
+import random as rand
+import numpy as np
+
+# Generate random walk data
+def threeD_rand_walk(samples: int):
+    phi = np.linspace(0, 2 * np.pi, 360)
+    theta = np.linspace(0, np.pi, 180)
+    
+    x_list = [0]
+    y_list = [0]
+    z_list= [0]
+    x = 0
+    y = 0
+    z = 0
+
+    for i in range(samples):
+        p_dir = rand.choice(phi)
+        t_dir = rand.choice(theta)
+        x += np.cos(p_dir)*np.sin(t_dir)
+        y += np.sin(p_dir)*np.sin(t_dir)
+        z += np.cos(t_dir)
+        x_list.append(x)
+        y_list.append(y)
+        z_list.append(z)
+    
+    return x_list, y_list, z_list
+
+samples = 1000
+x_data, y_data, z_data = threeD_rand_walk(samples)
+
+#Create graph and set properties
+fig=plt.figure()
+ax = fig.add_subplot(projection='3d')
+line,= ax.plot([], [], [])
+ax.set_title('3D Random Walk')
+ax.set_xlabel('x', labelpad=20)
+ax.set_ylabel('y', labelpad=20)
+ax.set_zlabel('z', labelpad=20)
+ax.set_xlim3d(min(x_data), max(x_data))
+ax.set_ylim3d(min(y_data), max(y_data))
+ax.set_zlim3d(min(z_data), max(z_data))
+
+#Plots Random Walk
+def plot():
+    ax.plot(x_data, y_data, z_data)
+    plt.show()
+
+#Animates Random Walk
+def animate():
+    def init():
+        line.set_data([], [])
+        line.set_3d_properties([])
+        return line,
+
+    # Update function
+    def update(frame):
+        line.set_data(x_data[:frame], y_data[:frame])
+        line.set_3d_properties(z_data[:frame])
+        return line,
+
+    # Create animation
+    ani = FuncAnimation(fig, update, frames=samples, init_func=init, blit=False, interval=100)
+    ani.save('Prac 3D Brownian Motion.gif',writer='pillow',fps=30)
+    # Display the animation
+    plt.show()
+
+#Example calls
+plot() 
+animate()
