@@ -1,0 +1,114 @@
+from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
+import numpy as np
+import random as rand
+import time
+
+plt.close() #Allows for interactive plot to work without interfering with the other plots
+%matplotlib widget
+
+class Random_Walk:
+    def __init__(self, dimension, steps):
+        self.dimension = dimension
+        self.steps = steps
+        self.positions = None #Will be updated with randon walk data
+                 
+    def generate_walk_data(self):
+        if self.dimension == 1:
+            self.positions = self._1D_walk()
+        elif self.dimension == 2:
+            self.positions = self._2D_walk()
+        elif self.dimension == 3:
+            self.positions = self._3D_walk()
+        else:
+            raise ValueError("Incorrect dimension provided (accepts 1,2, or 3)")
+        
+    def _1D_walk(self):
+        y_list=[0]
+        y=0
+        
+        for i in range(self.steps):
+            dy=rand.choice([-1,1])
+            y+=dy
+            y_list.append(y)
+            
+        return y_list
+    
+    def _2D_walk(self):
+        angs = np.linspace(0, 2 * np.pi, 360)
+        
+        x_list = [0]
+        y_list = [0]
+        
+        x = 0
+        y = 0
+
+        for i in range(self.steps):
+            dir = rand.choice(angs)
+            x += np.cos(dir)
+            y += np.sin(dir)
+            x_list.append(x)
+            y_list.append(y)
+
+        return x_list, y_list
+    
+    def _3D_walk(self):
+        phi = np.linspace(0, 2 * np.pi, 360)
+        theta = np.linspace(0, np.pi, 180)
+
+        x_list = [0]
+        y_list = [0]
+        z_list= [0]
+        
+        x = 0
+        y = 0
+        z = 0
+
+        for i in range(self.steps):
+            p_dir = rand.choice(phi)
+            t_dir = rand.choice(theta)
+            x += np.cos(p_dir)*np.sin(t_dir)
+            y += np.sin(p_dir)*np.sin(t_dir)
+            z += np.cos(t_dir)
+            x_list.append(x)
+            y_list.append(y)
+            z_list.append(z)
+    
+        return x_list, y_list, z_list
+    
+    def plot(self):
+        if self.dimension == 1:
+            y = self.positions
+            plt.plot(y)
+            plt.title('1D Random Walk')
+            plt.xlabel('Steps')
+            plt.ylabel('Position')
+            plt.show()
+            
+        elif self.dimension == 2:
+            x, y = self.positions
+            plt.plot(x, y)
+            plt.title('2D Random Walk')
+            plt.xlabel('x')
+            plt.ylabel('y')
+            plt.show()
+            
+        elif self.dimension == 3:
+            x, y, z = self.positions
+            ax = plt.figure().add_subplot(projection='3d')
+            ax.plot(x, y, z)
+            ax.set_title('3D Random Walk')
+            ax.set_xlabel('x', labelpad=5)
+            ax.set_ylabel('y', labelpad=5)
+            ax.set_zlabel('z', labelpad=5)
+            plt.show()
+            
+        elif self.positions is None:
+            raise ValueError("No random walk data generated")
+
+#Note: Sometimes running the 3D plot for the first time doesn't actually return a plot. Simply run again and it should appear.
+
+#Example run
+rw=Random_Walk(dimension = 2, steps = 100)
+rw.generate_walk_data()
+rw.plot()
