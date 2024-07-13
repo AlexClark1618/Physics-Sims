@@ -1,0 +1,53 @@
+from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
+import numpy as np
+import random as rand
+
+def rand_walk(samples: int): #Generates random walk 
+    x_list=[n for n in range(samples)] #x values are auto generated, but I find this easier for animation purposes
+    y_list=[0]
+    y=0
+    for i in range(samples-1):
+        dy=rand.choice([-1,1])
+        y+=dy
+        y_list.append(y)
+    
+    return x_list, y_list
+
+samples=1000 #User controlled
+x_data, y_data = rand_walk(samples)
+
+#For displaying multiple plots at the same time
+def number_of_runs(runs: int):
+    for i in range(runs): #Specifices number of graphs to create
+        x_data, y_data = rand_walk(samples)
+        plt.plot(x_data, y_data)
+    plt.show()
+
+# Example run
+number_of_runs(10)
+
+'____________________________________________________________________________________________________________________'
+
+"Animation (Single Run)"
+
+# Set up graph
+fig, ax = plt.subplots()
+ax.set_xlim(min(x_data) - 1, max(x_data) + 1)
+ax.set_ylim(min(y_data) - 1, max(y_data) + 1)
+line, = ax.plot([], [], 'b-')  # Line object to trace the path
+
+# Initialization function
+def init():
+    line.set_data([], [])
+    return line
+
+# Update function
+def update(frame):
+    line.set_data(x_data[:frame], y_data[:frame])
+    return line
+
+# Create animation
+ani = FuncAnimation(fig, update, frames=samples, init_func=init, blit=False, interval=100)
+ani.save('1D Brownian Motion (Line).gif',writer='pillow',fps=30)
+plt.show()
