@@ -1,0 +1,50 @@
+"2D Brownian Motion"
+
+from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
+import random as rand
+import numpy as np
+
+# Generate random walk data
+def rand_walk(samples: int):
+    angs = np.linspace(0, 2 * np.pi, 360)
+    x_list = [0]
+    y_list = [0]
+    x = 0
+    y = 0
+
+    for i in range(samples):
+        dir = rand.choice(angs)
+        x += np.cos(dir)
+        y += np.sin(dir)
+        x_list.append(x)
+        y_list.append(y)
+    
+    return x_list, y_list
+
+samples = 100 # User Controlled
+x_data, y_data = rand_walk(samples) # Unpack data
+
+# Set up the figure, axis, and plot element
+fig, ax = plt.subplots()
+ax.set_xlim(min(x_data) - 1, max(x_data) + 1)
+ax.set_ylim(min(y_data) - 1, max(y_data) + 1)
+line, = ax.plot([], [], 'b-')  # Line object to trace the path
+point, = ax.plot([], [], 'ro')  # Point object to represent the particle
+
+# Initialization function
+def init():
+    line.set_data([], [])
+    point.set_data([], [])
+    return line, point
+
+# Update function
+def update(frame):
+    line.set_data(x_data[:frame], y_data[:frame])
+    point.set_data(x_data[frame], y_data[frame])
+    return line, point
+
+# Create animation
+ani = FuncAnimation(fig, update, frames=len(x_data), init_func=init, blit=True, interval=100)
+ani.save('2D Brownian Motion.gif',writer='pillow',fps=30)
+plt.show()
